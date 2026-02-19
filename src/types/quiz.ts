@@ -35,10 +35,11 @@ export interface UserProgress {
 
 export interface GameState {
   currentTopic: string | null
-  currentQuestionIndex: number
+  currentDifficulty: 'easy' | 'medium' | 'hard'
   currentQuestion: Question | null
   score: number
   totalXP: number
   streak: number
   wrongAnswers: Question[]
+  answeredCorrectly: Map<string, Set<string>>
 }

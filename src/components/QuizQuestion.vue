@@ -29,6 +29,12 @@
       </div>
     </div>
     
+    <!-- Befehle -->
+    <div v-if="!answered" class="quiz-commands">
+      <span>[Q] ❌ Beenden</span>
+      <span>[S] 📊 Statistik</span>
+    </div>
+
     <!-- Eingabe -->
     <div v-if="!answered" class="input-line">
       <span class="prompt">$ Deine Antwort:</span>
@@ -73,7 +79,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import type { Question } from '../types/quiz'
-import { COUNTDOWN_SECONDS } from '../constants/game'
+import { COUNTDOWN_SECONDS_CORRECT, COUNTDOWN_SECONDS_WRONG } from '../constants/game'
 
 const props = defineProps<{
   question: Question
@@ -84,12 +90,14 @@ const props = defineProps<{
 const emit = defineEmits<{
   answer: [isCorrect: boolean]
   next: []
+  quit: []
+  showStats: []
 }>()
 
 const userAnswer = ref('')
 const answered = ref(false)
 const isCorrect = ref(false)
-const countdown = ref(COUNTDOWN_SECONDS)
+const countdown = ref(COUNTDOWN_SECONDS_WRONG)
 const answerInput = ref<HTMLInputElement | null>(null)
 let countdownInterval: ReturnType<typeof setInterval> | null = null
 
@@ -115,8 +123,24 @@ function submitAnswer() {
   if (!userAnswer.value.trim()) return
   
   const answer = userAnswer.value.toLowerCase().trim()
+
+  // Sonderbefehle
+  if (answer === 'q') {
+    userAnswer.value = ''
+    emit('quit')
+    return
+  }
+  if (answer === 's') {
+    userAnswer.value = ''
+    emit('showStats')
+    return
+  }
+
   isCorrect.value = answer === props.question.correctAnswer
   answered.value = true
+  
+  // Countdown: 5s bei richtig, 20s bei falsch
+  countdown.value = isCorrect.value ? COUNTDOWN_SECONDS_CORRECT : COUNTDOWN_SECONDS_WRONG
   
   emit('answer', isCorrect.value)
   
@@ -196,6 +220,17 @@ onUnmounted(() => {
   color: var(--terminal-yellow);
   font-weight: bold;
   margin-right: 10px;
+}
+
+.quiz-commands {
+  display: flex;
+  gap: 25px;
+  margin-top: 15px;
+  padding: 8px 0;
+  border-top: 1px dashed var(--terminal-green);
+  color: var(--terminal-yellow);
+  font-size: 13px;
+  opacity: 0.7;
 }
 
 .input-line {

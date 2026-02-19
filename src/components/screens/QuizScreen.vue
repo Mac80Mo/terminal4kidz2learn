@@ -8,6 +8,8 @@
       :topic-name="topicName"
       @answer="handleAnswer"
       @next="handleNext"
+      @quit="handleQuit"
+      @show-stats="handleShowStats"
     />
   </div>
 </template>
@@ -25,6 +27,8 @@ defineProps<{
 const emit = defineEmits<{
   answer: [isCorrect: boolean]
   next: []
+  quit: []
+  showStats: []
 }>()
 
 function handleAnswer(isCorrect: boolean) {
@@ -33,5 +37,13 @@ function handleAnswer(isCorrect: boolean) {
 
 function handleNext() {
   emit('next')
+}
+
+function handleQuit() {
+  emit('quit')
+}
+
+function handleShowStats() {
+  emit('showStats')
 }
 </script>
