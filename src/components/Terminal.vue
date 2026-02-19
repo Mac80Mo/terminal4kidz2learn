@@ -215,6 +215,15 @@ function onStatsBack() {
   cameFromQuiz = false
   
   if (wasFromQuiz) {
+    // Nächste Frage laden, da beim Level-Up/Difficulty-Wechsel
+    // nextQuestion() übersprungen wurde
+    const hasMore = quiz.nextQuestion()
+    if (!hasMore) {
+      showAllCompleted.value = true
+      quiz.endQuiz()
+      navigation.goToMenu()
+      return
+    }
     navigation.goToQuiz()
   } else {
     navigation.goToMenu()
