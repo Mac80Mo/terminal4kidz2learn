@@ -77,7 +77,7 @@ export function useQuizController() {
     const pool = availableQuestions.value
     if (pool.length === 0) return null
     const randomIndex = Math.floor(Math.random() * pool.length)
-    return pool[randomIndex]
+    return pool[randomIndex] ?? null
   }
   
   /**
